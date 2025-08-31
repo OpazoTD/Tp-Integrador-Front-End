@@ -1,0 +1,214 @@
+[
+  {
+    "name": "PC Escritorio",
+    "factor": 0.35
+  },
+  {
+    "name": "PC Portátil",
+    "factor": 0.010691999999999998
+  },
+  {
+    "name": "Multifunción",
+    "factor": 0.4374
+  },
+  {
+    "name": "Fotocopiadora",
+    "factor": 0.4374
+  },
+  {
+    "name": "Impresora",
+    "factor": 0.3645
+  },
+  {
+    "name": "Freezer",
+    "factor": 0.043739999999999994
+  },
+  {
+    "name": "Heladera",
+    "factor": 0.030618
+  },
+  {
+    "name": "Microondas",
+    "factor": 0.31104
+  },
+  {
+    "name": "Dispenser",
+    "factor": 0.1215
+  },
+  {
+    "name": "Pava eléctrica",
+    "factor": 1.1663999999999999
+  },
+  {
+    "name": "Radio",
+    "factor": 0.02916
+  },
+  {
+    "name": "Estufa a gas",
+    "factor": 0.5265
+  },
+  {
+    "name": "Caloventor",
+    "factor": 0.972
+  },
+  {
+    "name": "Radiador eléctrico",
+    "factor": 0.46656
+  },
+  {
+    "name": "Estufa Infrarroja",
+    "factor": 0.7776000000000001
+  },
+  {
+    "name": "Estufa de Cuarzo",
+    "factor": 0.5831999999999999
+  },
+  {
+    "name": "Ventilador",
+    "factor": 0.043739999999999994
+  },
+  {
+    "name": "Aire Acondicionado",
+    "factor": 0.4923179999999999
+  },
+  {
+    "name": "Pie",
+    "factor": 0.0
+  },
+  {
+    "name": "Bicicleta",
+    "factor": 0.0
+  },
+  {
+    "name": "Moto",
+    "factor": 0.0711
+  },
+  {
+    "name": "Auto Nafta",
+    "factor": 0.2844
+  },
+  {
+    "name": "Auto Diesel",
+    "factor": 0.3047
+  },
+  {
+    "name": "Auto GNC",
+    "factor": 0.195
+  },
+  {
+    "name": "Camioneta Nafta",
+    "factor": 0.1422
+  },
+  {
+    "name": "Camioneta Diesel",
+    "factor": 0.19390000000000002
+  },
+  {
+    "name": "Colectivo",
+    "factor": 0.026591999999999998
+  },
+  {
+    "name": "Combi",
+    "factor": 0.3047
+  },
+  {
+    "name": "Avión",
+    "factor": 0.324
+  },
+  {
+    "name": "Incandescente 20W",
+    "factor": 0.02
+  },
+  {
+    "name": "Incandescente 40W",
+    "factor": 0.04
+  },
+  {
+    "name": "Incandescente 60W",
+    "factor": 0.06
+  },
+  {
+    "name": "Incandescente 75W",
+    "factor": 0.075
+  },
+  {
+    "name": "Incandescente 100W",
+    "factor": 0.1
+  },
+  {
+    "name": "Fluorescente compacta 8W",
+    "factor": 0.008
+  },
+  {
+    "name": "Fluorescente compacta 12W",
+    "factor": 0.012
+  },
+  {
+    "name": "Fluorescente compacta 15W",
+    "factor": 0.015
+  },
+  {
+    "name": "Fluorescente compacta 20W",
+    "factor": 0.02
+  },
+  {
+    "name": "Fluorescente compacta 23W",
+    "factor": 0.023
+  },
+  {
+    "name": "Led 4W",
+    "factor": 0.004
+  },
+  {
+    "name": "Led 6W",
+    "factor": 0.006
+  },
+  {
+    "name": "Led 9W",
+    "factor": 0.009
+  },
+  {
+    "name": "Led 11W",
+    "factor": 0.011
+  },
+  {
+    "name": "Led 15W",
+    "factor": 0.015
+  },
+  {
+    "name": "Tubo fluorescente 18W",
+    "factor": 0.018
+  },
+  {
+    "name": "Tubo fluorescente 30W",
+    "factor": 0.03
+  },
+  {
+    "name": "Tubo fluorescente 36W",
+    "factor": 0.036
+  },
+  {
+    "name": "Tubo fluorescente 58W",
+    "factor": 0.058
+  },
+  {
+    "name": "Tubo Led 9W",
+    "factor": 0.009
+  },
+  {
+    "name": "Tubo Led 14W",
+    "factor": 0.014
+  },
+  {
+    "name": "Tubo Led 18W",
+    "factor": 0.018
+  },
+  {
+    "name": "Tubo Led 25W",
+    "factor": 0.025
+  },
+  {
+    "name": "Led",
+    "factor": 0.0
+  }
+]

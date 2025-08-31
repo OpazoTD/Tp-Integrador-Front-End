@@ -1,0 +1,93 @@
+{
+  "artefactos": [
+    "PC Escritorio",
+    "PC Portátil",
+    "Radio",
+    "Multifunción",
+    "Fotocopiadora",
+    "Impresora",
+    "Microondas",
+    "Dispenser",
+    "Pava eléctrica"
+  ],
+  "invierno": [
+    "Estufa a gas",
+    "Caloventor",
+    "Radiador eléctrico",
+    "Estufa Infrarroja",
+    "Estufa de Cuarzo"
+  ],
+  "verano": [
+    "Ventilador",
+    "Aire Acondicionado"
+  ],
+  "commute": [
+    "Pie",
+    "Bicicleta",
+    "Moto",
+    "Auto Nafta",
+    "Auto Diesel",
+    "Auto GNC",
+    "Camioneta Nafta",
+    "Camioneta Diesel",
+    "Colectivo",
+    "Combi"
+  ],
+  "business": [
+    "Pie",
+    "Bicicleta",
+    "Moto",
+    "Auto Nafta",
+    "Auto Diesel",
+    "Auto GNC",
+    "Camioneta Nafta",
+    "Camioneta Diesel",
+    "Colectivo",
+    "Combi",
+    "Avión"
+  ],
+  "iluminacion": {
+    "tipos": [
+      "Incandescente",
+      "Fluorescente compacta",
+      "Led",
+      "Tubo fluorescente",
+      "Tubo Led"
+    ],
+    "potencias": {
+      "Incandescente": [
+        "20W",
+        "40W",
+        "60W",
+        "75W",
+        "100W"
+      ],
+      "Fluorescente compacta": [
+        "8W",
+        "12W",
+        "15W",
+        "20W",
+        "23W"
+      ],
+      "Led": [
+        "4W",
+        "6W",
+        "9W",
+        "11W",
+        "15W"
+      ],
+      "Tubo fluorescente": [
+        "18W",
+        "30W",
+        "36W",
+        "58W"
+      ],
+      "Tubo Led": [
+        "9W",
+        "14W",
+        "18W",
+        "25W"
+      ]
+    }
+  }
+}
