@@ -3,37 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grupo 7 - Calculadora de huella de carbono</title>
-
-    <!-- Fuente del proyecto -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Tailwind -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap"rel="stylesheet"/>
+    <title>Grupo 7 - Calculadora de huella de carbono</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="/css/style.css" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              rubik: ['Rubik', 'sans-serif']
+            }
+          }
+        }
+      }
+    </script>
   </head>
-  <body>
-    <main class="w-full max-w-md text-center">
-      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-[18px] m-0">
-        Calculadora de huella de carbono
-      </h1>
-      <p class="mt-3 text-gray-700">
-        Ingresando unos pocos datos de tu vida diaria, podés conocer tu huella de carbono.
-      </p>
 
-      <a
-        href="calculadora.html"
-        class="mt-8 inline-flex items-center justify-center rounded-2xl px-6 py-3 text-base font-medium bg-emerald-500 hover:bg-emerald-600 focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-400 transition"
-      >
-        Calcular huella
-      </a>
+  <body class="min-h-screen bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 font-rubik">
+    <main class="min-h-screen flex items-center justify-center p-4">
+                <!-- Tarjeta principal -->
+        <article class="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div class="flex flex-col lg:flex-row min-h-[600px]">
+          <!-- Sección izquierda: texto -->
+          <section class="flex-1 p-8 lg:p-12 flex flex-col justify-center">
+            <div class="max-w-md mx-auto lg:mx-0">
+              <h1 class="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
+                Calculadora de huella de carbono
+              </h1>
+              <p class="text-smext-gray-900 mb-8 leading-relaxed">
+                Ingresando unos pocos datos de tu vida diaria, podés conocer tu huella de carbono y contribuir al cuidado del medio ambiente.
+              </p>
+              <a
+                href="calculadora.html"
+                class="inline-flex items-center justify-center rounded-2xl px-8 py-4 text-lg font-medium text-grey-800
+                 bg-emerald-500 hover:bg-emerald-600 focus-visible:outline-dashed focus-visible:outline-2"
+              >
+                Calcular huella
+              </a>
+            </div>
+          </section>
+
+          <!-- Sección derecha: imagen -->
+          <aside class="flex-1 hidden lg:flex">
+            <img
+              src="./img/huella-de-carbono.jpg"
+              alt="Ilustración sobre huella de carbono"
+              class="w-full h-full object-cover"
+            />
+          </aside>
+        </div>
+      </article>
     </main>
   </body>
 </html>
