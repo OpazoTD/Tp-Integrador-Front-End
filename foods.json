@@ -1,0 +1,104 @@
+[
+  {
+    "id": "beef",
+    "name": "Carne vacuna (prom.)",
+    "kgco2e_per_kg": 99.0,
+    "portion_g": 150
+  },
+  {
+    "id": "lamb",
+    "name": "Cordero / Caprinos",
+    "kgco2e_per_kg": 40.0,
+    "portion_g": 150
+  },
+  {
+    "id": "pork",
+    "name": "Cerdo",
+    "kgco2e_per_kg": 12.0,
+    "portion_g": 150
+  },
+  {
+    "id": "chicken",
+    "name": "Pollo",
+    "kgco2e_per_kg": 9.9,
+    "portion_g": 150
+  },
+  {
+    "id": "fish",
+    "name": "Pescado (prom.)",
+    "kgco2e_per_kg": 5.0,
+    "portion_g": 150
+  },
+  {
+    "id": "eggs",
+    "name": "Huevos",
+    "kgco2e_per_kg": 4.7,
+    "portion_g": 120
+  },
+  {
+    "id": "milk",
+    "name": "Leche (líquida)",
+    "kgco2e_per_kg": 3.0,
+    "portion_g": 200
+  },
+  {
+    "id": "cheese",
+    "name": "Queso",
+    "kgco2e_per_kg": 23.9,
+    "portion_g": 30
+  },
+  {
+    "id": "rice",
+    "name": "Arroz (grano)",
+    "kgco2e_per_kg": 4.0,
+    "portion_g": 75
+  },
+  {
+    "id": "wheat",
+    "name": "Pan/Pastas (trigo)",
+    "kgco2e_per_kg": 1.4,
+    "portion_g": 80
+  },
+  {
+    "id": "legumes",
+    "name": "Legumbres (porotos, lentejas)",
+    "kgco2e_per_kg": 0.9,
+    "portion_g": 75
+  },
+  {
+    "id": "tofu",
+    "name": "Tofu",
+    "kgco2e_per_kg": 3.0,
+    "portion_g": 120
+  },
+  {
+    "id": "fruits",
+    "name": "Frutas (prom.)",
+    "kgco2e_per_kg": 1.1,
+    "portion_g": 150
+  },
+  {
+    "id": "vegetables",
+    "name": "Verduras (prom.)",
+    "kgco2e_per_kg": 0.5,
+    "portion_g": 150
+  },
+  {
+    "id": "oils",
+    "name": "Aceites (prom.)",
+    "kgco2e_per_kg": 6.0,
+    "portion_g": 15
+  },
+  {
+    "id": "coffee",
+    "name": "Café",
+    "kgco2e_per_kg": 17.0,
+    "portion_g": 15
+  },
+  {
+    "id": "chocolate",
+    "name": "Chocolate",
+    "kgco2e_per_kg": 46.0,
+    "portion_g": 25
+  }
+]
