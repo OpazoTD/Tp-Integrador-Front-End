@@ -178,6 +178,17 @@ select.input {
   width: 5ch;
   max-width: 80px;
 }
+/* Iluminación: cantidad y horas */
+#page-iluminacion .input.qty,
+#page-iluminacion .input.hrs {
+  width: 5ch;
+  max-width: 80px;
+}
+/* Iluminación: selects que no rompan layout */
+#page-iluminacion .input.tipo,
+#page-iluminacion .input.potencia {
+  max-width: 100%;
+}
 
 
 /* Mantener filas flex-wrapping por seguridad */
