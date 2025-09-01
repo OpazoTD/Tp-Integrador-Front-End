@@ -203,6 +203,192 @@ function renderClima() {
   });
 }
 
+// Iluminacion
+
+// Genera las opciones para los selectores en esta seccion
+function optionsHTML(arr, selected) {
+  return arr
+    .map(
+      (v) =>
+        `<option value="${v}" ${v === selected ? "selected" : ""}>${v}</option>`
+    )
+    .join("");
+}
+//Devuelve el factor de una lámpara según tipo y potencia
+function factorForLamp(tipo, potencia) {  
+  if (!tipo || !potencia) return 0;
+  const key = `${tipo} ${potencia}`.trim();
+  return factorFor(key);
+}
+
+// Crea la el formulario de la seccion iluminacion con sus controles
+function lampRow(item, idx) {
+  const tipos = state.cats.iluminacion?.tipos || [];
+  const potenciasAll = state.cats.iluminacion?.potencias || {};
+  const potencias = potenciasAll[item.tipo] || [];
+
+  const row = document.createElement("div");
+  row.className = "card item";
+  row.innerHTML = `
+    <div style="flex:1">
+      <div class="row" style="gap:8px;align-items:flex-end;flex-wrap:wrap">
+        <div>
+          <label>Tipo</label><br>
+          <select class="input tipo w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30">${optionsHTML(
+            tipos,
+            item.tipo || tipos[0] || ""
+          )}</select>
+        </div>
+        <div>
+          <label>Potencia</label><br>
+          <select class="input potencia w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30">${optionsHTML(
+            potencias,
+            item.potencia || potencias[0] || ""
+          )}</select>
+        </div>
+        <div>
+          <label>Cantidad</label><br>
+          <input class="input qty w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="numeric" min="0" step="1" value="${
+            item.qty ?? 0
+          }">
+        </div>
+        <div>
+          <label>Horas/día</label><br>
+          <input class="input hrs w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="decimal" min="0" step="0.5" value="${
+            item.hrs ?? 0
+          }">
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <button class="btn icon del inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-zinc-700 w-8 h-8 text-[15px] hover:bg-gray-100 dark:hover:bg-zinc-800 transition" title="Eliminar">✕</button>
+    </div>
+    <div class="emi">0</div>
+  `;
+  const tipoSel = row.querySelector(".tipo");
+  const potenciaSel = row.querySelector(".potencia");
+  const qtyInp = row.querySelector(".qty");
+  const hrsInp = row.querySelector(".hrs");
+
+  // Actualiza las potencias disponibles al cambiar el tipo de lámpara
+  function refreshPotencias() {
+    const t = tipoSel.value;
+    const pots = (state.cats.iluminacion?.potencias || {})[t] || [];
+    potenciaSel.innerHTML = optionsHTML(
+      pots,
+      pots.includes(item.potencia) ? item.potencia : pots[0] || ""
+    );
+    compute();
+  }
+
+    // Calcula las emisiones de cada lámpara y actualiza la fila y el estado
+  function compute() {
+    const t = tipoSel.value;
+    const p = potenciaSel.value;
+    const f = factorForLamp(t, p);
+    const emi =
+      f *
+      parseFloat(qtyInp.value || "0") *
+      parseFloat(hrsInp.value || "0") *
+      number($("#diasIluminacion")?.value ?? state.defaults.diasIluminacion, 0);
+    row.querySelector(".emi").textContent = fmt(emi);
+    state.ilum[idx] = {
+      tipo: t,
+      potencia: p,
+      qty: parseFloat(qtyInp.value || "0"),
+      hrs: parseFloat(hrsInp.value || "0"),
+    };
+    updateSubtotals();
+    persist();
+  }
+// Eventos para refrescar o calcular según cambios del usuario
+  tipoSel.addEventListener("change", refreshPotencias);
+  potenciaSel.addEventListener("change", compute);
+  qtyInp.addEventListener("input", compute);
+  hrsInp.addEventListener("input", compute);
+
+  // Botón para eliminar la fila de lámpara
+  row.querySelector(".del").addEventListener("click", () => {
+    state.ilum.splice(idx, 1);
+    renderIluminacion();
+    updateSubtotals();
+    persist();
+  });
+
+  refreshPotencias();
+  return row;
+}
+
+// Renderiza toda la lista de lámparas
+function renderIluminacion() {
+  const cont = document.getElementById("list-ilum");
+  cont.innerHTML = "";
+  if (!Array.isArray(state.ilum) || state.ilum.length === 0) {
+    const t0 = (state.cats.iluminacion?.tipos || [])[0] || "";
+    const p0 = ((state.cats.iluminacion?.potencias || {})[t0] || [])[0] || "";
+    state.ilum = [
+      { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+      { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+      { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+    ];
+  }
+  state.ilum.forEach((it, i) => cont.appendChild(lampRow(it, i)));
+
+    // Botón para agregar una nueva lámpara
+  const btnAdd = document.getElementById("btnAddLamp");
+  btnAdd.onclick = () => {
+    const t0 = (state.cats.iluminacion?.tipos || [])[0] || "";
+    const p0 = ((state.cats.iluminacion?.potencias || {})[t0] || [])[0] || "";
+    state.ilum.push({ tipo: t0, potencia: p0, qty: 0, hrs: 0 });
+    renderIluminacion();
+    updateSubtotals();
+    persist();
+  };
+
+  // Botón para reiniciar las lámparas cargadas
+  const btnClear = document.getElementById("btnClearLamp");
+  if (btnClear) {
+    btnClear.onclick = () => {
+      if (!Array.isArray(state.ilum) || state.ilum.length === 0) {
+        const t0 = (state.cats.iluminacion?.tipos || [])[0] || "";
+        const p0 =
+          ((state.cats.iluminacion?.potencias || {})[t0] || [])[0] || "";
+        state.ilum = [
+          { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+          { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+          { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+        ];
+      } else {
+        state.ilum = state.ilum.map((it) => ({ ...it, qty: 0, hrs: 0 }));
+      }
+      renderIluminacion();
+      updateSubtotals();
+      persist();
+    };
+  }
+  
+// Recalcula todas las emisiones si cambian los días de uso
+  const dIlu = document.getElementById("diasIluminacion");
+  if (dIlu) {
+    if (!dIlu.value) dIlu.value = state.defaults.diasIluminacion;
+    dIlu.oninput = () => {
+      document.querySelectorAll("#list-ilum .card.item").forEach((row) => {
+        const tipoSel = row.querySelector(".tipo");
+        const potenciaSel = row.querySelector(".potencia");
+        const qty = parseFloat(row.querySelector(".qty").value || "0");
+        const hrs = parseFloat(row.querySelector(".hrs").value || "0");
+        const f = factorFor(`${tipoSel.value} ${potenciaSel.value}`);
+        row.querySelector(".emi").textContent = fmt(
+          f * qty * hrs * number(dIlu.value, 0)
+        );
+      });
+      updateSubtotals();
+      persist();
+    };
+  }
+}
+
+
 /*********************************************************************************************************
  *
  *  Funciones comunes a todas las secciones
@@ -234,6 +420,23 @@ function updateSubtotals() {
   );
   state.subtotals.clima = subInv + subVer;
   
+  // iluminacion
+    const dIlu = number(
+    $("#diasIluminacion")?.value ?? state.defaults.diasIluminacion,
+    0
+  );
+  const subIlum = (state.ilum || []).reduce(
+    (sum, it) =>
+      sum +
+      factorFor(`${it.tipo} ${it.potencia}`) *
+        (it.qty || 0) *
+        (it.hrs || 0) *
+        dIlu,
+    0
+  );
+  state.subtotals.iluminacion = subIlum;
+  const subIlumEl = document.getElementById("subIlum");
+  if (subIlumEl) subIlumEl.textContent = fmt(subIlum);
 
   updateFooter();
 }
@@ -332,6 +535,7 @@ function renderAll() {
   renderArtefactos();
   renderClima();
   updateSubtotals();
+  renderIluminacion();
   // updateResumen();
 }
 
