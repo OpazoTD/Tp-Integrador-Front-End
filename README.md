@@ -1,6 +1,6 @@
  # Calculadora de Huella de Carbono Personal
 
-<img width="366" height="746" alt="image" src="./img/demo.jpg" />
+<img width="438" height="251" alt="image" src="./img/demo.jpg" />
 Una calculadora web para estimar la huella de carbono personal a partir de los hábitos de consumo diario y anual, creada con HTML,Tailwind CSS y JavaScript.
 
 ## Descripción
