@@ -85,10 +85,38 @@
         class="header bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-zinc-800 sticky top-0 z-20 px-4 py-3"
       >
         <div class="max-w-3xl mx-auto px-3 flex items-center justify-between">
-          <h1 class="text-lg font-semibold text-[18px] m-0">
-            Huella de Carbono
-          </h1>
-          <div class="subtle text-xs mt-0.5"></div>
+          <!-- Botón Inicio + título + control claro/oscuro -->
+          <div class="flex items-center gap-2">
+            <a
+              href="index.html"
+              aria-label="Inicio"
+              title="Inicio"
+              class="inline-flex items-center justify-center rounded-xl border border-gray-300 dark:border-zinc-700 min-w-[44px] min-h-[44px] p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-lime-800 focus-visible:outline-none focus-visible:ring focus-visible:ring-emerald-500/30 transition"
+            >
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+                />
+              </svg>
+            </a>
+
+            <h1 class="text-lg font-semibold text-[18px] m-0">
+              Huella de Carbono
+            </h1>
+          </div>
+
+          <!-- Control modo claro/oscuro  -->
           <label class="flex items-center cursor-pointer select-none ml-4">
             <span id="mode_text" class="mr-3 text-sm">Modo Oscuro</span>
             <input id="darkToggle" type="checkbox" class="hidden" />
@@ -242,7 +270,7 @@
         </section>
 
         <!-- ILUMINACION -->
-<section
+        <section
           id="page-iluminacion"
           class="page"
           role="tabpanel"
