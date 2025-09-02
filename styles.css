@@ -189,8 +189,16 @@ select.input {
 #page-iluminacion .input.potencia {
   max-width: 100%;
 }
-
-
+/* Transporte: ida/vuelta y km totales */
+#page-transporte .input.ida,
+#page-transporte .input.vuelta {
+  width: 6ch;
+  max-width: 96px;
+}
+#page-transporte .input.kms {
+  width: 10ch;
+  max-width: 120px;
+}
 /* Mantener filas flex-wrapping por seguridad */
 .item .row {
   display: flex;

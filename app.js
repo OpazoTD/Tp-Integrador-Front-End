@@ -6,7 +6,7 @@
 const state = {
   factors: [],                        // Arreglo para cargar los factores de emisión, desde JSON.
   factorMap: new Map(),               // Mapa para buscar el factor de emisión.
-  factorMapNorm: new Map(),           // Mara para buscar el factor de emisión pero por nombre normalizado (minúsculas sin esp.)
+  factorMapNorm: new Map(),           // Mapa para buscar el factor de emisión pero por nombre normalizado (minúsculas sin esp.)
   cats: {},                           // catálogo por categorías
   
   // Valores por defecto para anualizar consumos diarios
@@ -201,6 +201,198 @@ function renderClima() {
     updateSubtotals();
     persist();
   });
+}
+
+
+// Transporte
+function renderTransporte() {
+  $("#diasLaboralesT").value = state.defaults.laborales;
+  const lc = $("#list-commute");
+  lc.innerHTML = "";
+  state.cats.commute.forEach((mode) => {
+    const factor = factorFor(mode);
+    const row = document.createElement("div");
+    row.className = "card item";
+    row.innerHTML = `
+      <div>
+        <div class="name text-gray-900 dark:text-gray-100">${mode}</div>
+        <div class="meta text-xs text-gray-500 dark:text-gray-300"><span class="factor text-xs">factor: ${fmt(
+          factor
+        )} kg CO₂e/km</span></div>
+      </div>
+      <div class="right">
+        <div class="row" style="gap:6px">
+          <input class="input ida w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="decimal" min="0" step="0.1" value="${
+            state.km.commute.ida[mode] ?? 0
+          }" aria-label="Km ida">
+          <input class="input vuelta w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="decimal" min="0" step="0.1" value="${
+            state.km.commute.vuelta[mode] ?? 0
+          }" aria-label="Km vuelta">
+        </div>
+      </div>
+      <div class="emi">0</div>
+    `;
+    const ida = $(".ida", row),
+      vuelta = $(".vuelta", row);
+    function compute() {
+      const e =
+        factor *
+        (number(ida.value, 0) + number(vuelta.value, 0)) *
+        number($("#diasLaboralesT").value, 0);
+      $(".emi", row).textContent = fmt(e);
+      state.km.commute.ida[mode] = number(ida.value, 0);
+      state.km.commute.vuelta[mode] = number(vuelta.value, 0);
+      updateSubtotals();
+      persist();
+    }
+    ida.addEventListener("input", compute);
+    vuelta.addEventListener("input", compute);
+    compute();
+    lc.appendChild(row);
+  });
+  $("#diasLaboralesT").addEventListener("input", () => {
+    updateSubtotals();
+    persist();
+  });
+
+  const lb = $("#list-business");
+  lb.innerHTML = "";
+  state.cats.business.forEach((mode) => {
+    const factor = factorFor(mode);
+    const row = document.createElement("div");
+    row.className = "card item";
+    row.innerHTML = `
+      <div>
+        <div class="name text-gray-900 dark:text-gray-100">${mode}</div>
+        <div class="meta text-xs text-gray-500 dark:text-gray-300"><span class="factor text-xs">factor: ${fmt(
+          factor
+        )} kg CO₂e/km</span></div>
+      </div>
+      <div class="right">
+        <input class="input kms w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="decimal" min="0" step="0.1" value="${
+          state.km.business[mode] ?? 0
+        }" aria-label="Km totales">
+      </div>
+      <div class="emi">0</div>
+    `;
+    const kms = $(".kms", row);
+    function compute() {
+      const e = factor * number(kms.value, 0);
+      $(".emi", row).textContent = fmt(e);
+      state.km.business[mode] = number(kms.value, 0);
+      updateSubtotals();
+      persist();
+    }
+    kms.addEventListener("input", compute);
+    compute();
+    lb.appendChild(row);
+  });
+}
+
+function optionsHTML(arr, selected) {
+  return arr
+    .map(
+      (v) =>
+        `<option value="${v}" ${v === selected ? "selected" : ""}>${v}</option>`
+    )
+    .join("");
+}
+function factorForLamp(tipo, potencia) {
+  if (!tipo || !potencia) return 0;
+  const key = `${tipo} ${potencia}`.trim();
+  return factorFor(key);
+}
+function lampRow(item, idx) {
+  const tipos = state.cats.iluminacion?.tipos || [];
+  const potenciasAll = state.cats.iluminacion?.potencias || {};
+  const potencias = potenciasAll[item.tipo] || [];
+
+  const row = document.createElement("div");
+  row.className = "card item";
+  row.innerHTML = `
+    <div style="flex:1">
+      <div class="row" style="gap:8px;align-items:flex-end;flex-wrap:wrap">
+        <div>
+          <label>Tipo</label><br>
+          <select class="input tipo w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30">${optionsHTML(
+            tipos,
+            item.tipo || tipos[0] || ""
+          )}</select>
+        </div>
+        <div>
+          <label>Potencia</label><br>
+          <select class="input potencia w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30">${optionsHTML(
+            potencias,
+            item.potencia || potencias[0] || ""
+          )}</select>
+        </div>
+        <div>
+          <label>Cantidad</label><br>
+          <input class="input qty w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="numeric" min="0" step="1" value="${
+            item.qty ?? 0
+          }">
+        </div>
+        <div>
+          <label>Horas/día</label><br>
+          <input class="input hrs w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="decimal" min="0" step="0.5" value="${
+            item.hrs ?? 0
+          }">
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <button class="btn icon del inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-zinc-700 w-8 h-8 text-[15px] hover:bg-gray-100 dark:hover:bg-zinc-800 transition" title="Eliminar">✕</button>
+    </div>
+    <div class="emi">0</div>
+  `;
+  const tipoSel = row.querySelector(".tipo");
+  const potenciaSel = row.querySelector(".potencia");
+  const qtyInp = row.querySelector(".qty");
+  const hrsInp = row.querySelector(".hrs");
+
+  function refreshPotencias() {
+    const t = tipoSel.value;
+    const pots = (state.cats.iluminacion?.potencias || {})[t] || [];
+    potenciaSel.innerHTML = optionsHTML(
+      pots,
+      pots.includes(item.potencia) ? item.potencia : pots[0] || ""
+    );
+    compute();
+  }
+
+  function compute() {
+    const t = tipoSel.value;
+    const p = potenciaSel.value;
+    const f = factorForLamp(t, p);
+    const emi =
+      f *
+      parseFloat(qtyInp.value || "0") *
+      parseFloat(hrsInp.value || "0") *
+      number($("#diasIluminacion")?.value ?? state.defaults.diasIluminacion, 0);
+    row.querySelector(".emi").textContent = fmt(emi);
+    state.ilum[idx] = {
+      tipo: t,
+      potencia: p,
+      qty: parseFloat(qtyInp.value || "0"),
+      hrs: parseFloat(hrsInp.value || "0"),
+    };
+    updateSubtotals();
+    persist();
+  }
+
+  tipoSel.addEventListener("change", refreshPotencias);
+  potenciaSel.addEventListener("change", compute);
+  qtyInp.addEventListener("input", compute);
+  hrsInp.addEventListener("input", compute);
+  row.querySelector(".del").addEventListener("click", () => {
+    state.ilum.splice(idx, 1);
+    renderIluminacion();
+    updateSubtotals();
+    persist();
+  });
+
+  refreshPotencias();
+  return row;
 }
 
 // Iluminacion
@@ -420,6 +612,26 @@ function updateSubtotals() {
   );
   state.subtotals.clima = subInv + subVer;
   
+    // Transporte
+  const dLT = number(
+    $("#diasLaboralesT")?.value ?? state.defaults.laborales,
+    0
+  );
+  const subComm = (state.cats.commute || []).reduce(
+    (sum, mode) =>
+      sum +
+      factorFor(mode) *
+        ((state.km.commute.ida[mode] ?? 0) +
+          (state.km.commute.vuelta[mode] ?? 0)) *
+        dLT,
+    0
+  );
+  const subBiz = (state.cats.business || []).reduce(
+    (sum, mode) => sum + factorFor(mode) * (state.km.business[mode] ?? 0),
+    0
+  );
+  state.subtotals.transporte = subComm + subBiz;
+  
   // iluminacion
     const dIlu = number(
     $("#diasIluminacion")?.value ?? state.defaults.diasIluminacion,
@@ -536,6 +748,7 @@ function renderAll() {
   renderClima();
   updateSubtotals();
   renderIluminacion();
+  renderTransporte();
   // updateResumen();
 }
 
