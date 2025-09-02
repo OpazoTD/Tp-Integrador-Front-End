@@ -49,7 +49,7 @@ Para ejecutar este proyecto, solo necesitas un navegador web. No se requiere un 
 1.  **Clona el repositorio:**
     ```bash git clone https://github.com/OpazoTD/Tp-Integrador-Front-End.git```
 2. **Navega a la carpeta del proyecto**:
-```bash cd Tp-Integrador-Front-End ```
+``` cd Tp-Integrador-Front-End ```
 
 3.  **Abre el archivo `index.html`** en tu navegador web y ya podrás utilizar la aplicación.
 
