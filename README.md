@@ -54,5 +54,5 @@ Para ejecutar este proyecto, solo necesitas un navegador web. No se requiere un 
 3.  **Abre el archivo `index.html`** en tu navegador web y ya podrás utilizar la aplicación.
 
 
-Licencia
+## Licencia
 Este proyecto es de código abierto y se distribuye bajo la Licencia MIT. Eres libre de usar, copiar, modificar y distribuir el software. Para más detalles, consulta el archivo LICENSE en el repositorio.
