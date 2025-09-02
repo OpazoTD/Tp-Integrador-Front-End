@@ -8,7 +8,6 @@
 html,
 body {
   height: 100%;
-  overflow-x: hidden;
 }
 
 /* Fuente y margen base para la aplicación */
@@ -189,6 +188,7 @@ select.input {
 #page-iluminacion .input.potencia {
   max-width: 100%;
 }
+
 /* Transporte: ida/vuelta y km totales */
 #page-transporte .input.ida,
 #page-transporte .input.vuelta {
@@ -199,6 +199,7 @@ select.input {
   width: 10ch;
   max-width: 120px;
 }
+
 /* Mantener filas flex-wrapping por seguridad */
 .item .row {
   display: flex;

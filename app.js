@@ -203,6 +203,191 @@ function renderClima() {
   });
 }
 
+// Iluminacion
+
+// Genera las opciones para los selectores en esta seccion
+function optionsHTML(arr, selected) {
+  return arr
+    .map(
+      (v) =>
+        `<option value="${v}" ${v === selected ? "selected" : ""}>${v}</option>`
+    )
+    .join("");
+}
+//Devuelve el factor de una lámpara según tipo y potencia
+function factorForLamp(tipo, potencia) {  
+  if (!tipo || !potencia) return 0;
+  const key = `${tipo} ${potencia}`.trim();
+  return factorFor(key);
+}
+
+// Crea la el formulario de la seccion iluminacion con sus controles
+function lampRow(item, idx) {
+  const tipos = state.cats.iluminacion?.tipos || [];
+  const potenciasAll = state.cats.iluminacion?.potencias || {};
+  const potencias = potenciasAll[item.tipo] || [];
+
+  const row = document.createElement("div");
+  row.className = "card item";
+  row.innerHTML = `
+    <div style="flex:1">
+      <div class="row" style="gap:8px;align-items:flex-end;flex-wrap:wrap">
+        <div>
+          <label>Tipo</label><br>
+          <select class="input tipo w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30">${optionsHTML(
+            tipos,
+            item.tipo || tipos[0] || ""
+          )}</select>
+        </div>
+        <div>
+          <label>Potencia</label><br>
+          <select class="input potencia w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30">${optionsHTML(
+            potencias,
+            item.potencia || potencias[0] || ""
+          )}</select>
+        </div>
+        <div>
+          <label>Cantidad</label><br>
+          <input class="input qty w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="numeric" min="0" step="1" value="${
+            item.qty ?? 0
+          }">
+        </div>
+        <div>
+          <label>Horas/día</label><br>
+          <input class="input hrs w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="decimal" min="0" step="0.5" value="${
+            item.hrs ?? 0
+          }">
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <button class="btn icon del inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-zinc-700 w-8 h-8 text-[15px] hover:bg-gray-100 dark:hover:bg-zinc-800 transition" title="Eliminar">✕</button>
+    </div>
+    <div class="emi">0</div>
+  `;
+  const tipoSel = row.querySelector(".tipo");
+  const potenciaSel = row.querySelector(".potencia");
+  const qtyInp = row.querySelector(".qty");
+  const hrsInp = row.querySelector(".hrs");
+
+  // Actualiza las potencias disponibles al cambiar el tipo de lámpara
+  function refreshPotencias() {
+    const t = tipoSel.value;
+    const pots = (state.cats.iluminacion?.potencias || {})[t] || [];
+    potenciaSel.innerHTML = optionsHTML(
+      pots,
+      pots.includes(item.potencia) ? item.potencia : pots[0] || ""
+    );
+    compute();
+  }
+
+    // Calcula las emisiones de cada lámpara y actualiza la fila y el estado
+  function compute() {
+    const t = tipoSel.value;
+    const p = potenciaSel.value;
+    const f = factorForLamp(t, p);
+    const emi =
+      f *
+      parseFloat(qtyInp.value || "0") *
+      parseFloat(hrsInp.value || "0") *
+      number($("#diasIluminacion")?.value ?? state.defaults.diasIluminacion, 0);
+    row.querySelector(".emi").textContent = fmt(emi);
+    state.ilum[idx] = {
+      tipo: t,
+      potencia: p,
+      qty: parseFloat(qtyInp.value || "0"),
+      hrs: parseFloat(hrsInp.value || "0"),
+    };
+    updateSubtotals();
+    persist();
+  }
+// Eventos para refrescar o calcular según cambios del usuario
+  tipoSel.addEventListener("change", refreshPotencias);
+  potenciaSel.addEventListener("change", compute);
+  qtyInp.addEventListener("input", compute);
+  hrsInp.addEventListener("input", compute);
+
+  // Botón para eliminar la fila de lámpara
+  row.querySelector(".del").addEventListener("click", () => {
+    state.ilum.splice(idx, 1);
+    renderIluminacion();
+    updateSubtotals();
+    persist();
+  });
+
+  refreshPotencias();
+  return row;
+}
+
+// Renderiza toda la lista de lámparas
+function renderIluminacion() {
+  const cont = document.getElementById("list-ilum");
+  cont.innerHTML = "";
+  if (!Array.isArray(state.ilum) || state.ilum.length === 0) {
+    const t0 = (state.cats.iluminacion?.tipos || [])[0] || "";
+    const p0 = ((state.cats.iluminacion?.potencias || {})[t0] || [])[0] || "";
+    state.ilum = [
+      { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+      { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+      { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+    ];
+  }
+  state.ilum.forEach((it, i) => cont.appendChild(lampRow(it, i)));
+
+    // Botón para agregar una nueva lámpara
+  const btnAdd = document.getElementById("btnAddLamp");
+  btnAdd.onclick = () => {
+    const t0 = (state.cats.iluminacion?.tipos || [])[0] || "";
+    const p0 = ((state.cats.iluminacion?.potencias || {})[t0] || [])[0] || "";
+    state.ilum.push({ tipo: t0, potencia: p0, qty: 0, hrs: 0 });
+    renderIluminacion();
+    updateSubtotals();
+    persist();
+  };
+
+  // Botón para reiniciar las lámparas cargadas
+  const btnClear = document.getElementById("btnClearLamp");
+  if (btnClear) {
+    btnClear.onclick = () => {
+      if (!Array.isArray(state.ilum) || state.ilum.length === 0) {
+        const t0 = (state.cats.iluminacion?.tipos || [])[0] || "";
+        const p0 =
+          ((state.cats.iluminacion?.potencias || {})[t0] || [])[0] || "";
+        state.ilum = [
+          { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+          { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+          { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
+        ];
+      } else {
+        state.ilum = state.ilum.map((it) => ({ ...it, qty: 0, hrs: 0 }));
+      }
+      renderIluminacion();
+      updateSubtotals();
+      persist();
+    };
+  }
+  
+// Recalcula todas las emisiones si cambian los días de uso
+  const dIlu = document.getElementById("diasIluminacion");
+  if (dIlu) {
+    if (!dIlu.value) dIlu.value = state.defaults.diasIluminacion;
+    dIlu.oninput = () => {
+      document.querySelectorAll("#list-ilum .card.item").forEach((row) => {
+        const tipoSel = row.querySelector(".tipo");
+        const potenciaSel = row.querySelector(".potencia");
+        const qty = parseFloat(row.querySelector(".qty").value || "0");
+        const hrs = parseFloat(row.querySelector(".hrs").value || "0");
+        const f = factorFor(`${tipoSel.value} ${potenciaSel.value}`);
+        row.querySelector(".emi").textContent = fmt(
+          f * qty * hrs * number(dIlu.value, 0)
+        );
+      });
+      updateSubtotals();
+      persist();
+    };
+  }
+}
+
 
 // Transporte
 function renderTransporte() {
@@ -395,191 +580,110 @@ function lampRow(item, idx) {
   return row;
 }
 
-// Iluminacion
+// Alimentos
 
-// Genera las opciones para los selectores en esta seccion
-function optionsHTML(arr, selected) {
-  return arr
-    .map(
-      (v) =>
-        `<option value="${v}" ${v === selected ? "selected" : ""}>${v}</option>`
-    )
-    .join("");
-}
-//Devuelve el factor de una lámpara según tipo y potencia
-function factorForLamp(tipo, potencia) {  
-  if (!tipo || !potencia) return 0;
-  const key = `${tipo} ${potencia}`.trim();
-  return factorFor(key);
-}
-
-// Crea la el formulario de la seccion iluminacion con sus controles
-function lampRow(item, idx) {
-  const tipos = state.cats.iluminacion?.tipos || [];
-  const potenciasAll = state.cats.iluminacion?.potencias || {};
-  const potencias = potenciasAll[item.tipo] || [];
-
+function foodRow(item) {
   const row = document.createElement("div");
   row.className = "card item";
   row.innerHTML = `
     <div style="flex:1">
-      <div class="row" style="gap:8px;align-items:flex-end;flex-wrap:wrap">
-        <div>
-          <label>Tipo</label><br>
-          <select class="input tipo w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30">${optionsHTML(
-            tipos,
-            item.tipo || tipos[0] || ""
-          )}</select>
+      <div class="name text-gray-900 dark:text-gray-100">${item.name}</div>
+      <div class="meta text-xs text-gray-500 dark:text-gray-300">factor: <span class="factor text-xs">${fmt(
+        item.kgco2e_per_kg
+      )}</span> kg CO₂e/kg</div>
+    </div>
+    <div class="right">
+      <div class="row" style="gap:6px;align-items:center">
+        <div style="text-align:center">
+          <label class="factor text-xs">Porc./sem</label><br>
+          <input class="input pors w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="decimal" min="0" step="0.5" value="0">
         </div>
-        <div>
-          <label>Potencia</label><br>
-          <select class="input potencia w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30">${optionsHTML(
-            potencias,
-            item.potencia || potencias[0] || ""
-          )}</select>
-        </div>
-        <div>
-          <label>Cantidad</label><br>
-          <input class="input qty w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="numeric" min="0" step="1" value="${
-            item.qty ?? 0
-          }">
-        </div>
-        <div>
-          <label>Horas/día</label><br>
-          <input class="input hrs w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="decimal" min="0" step="0.5" value="${
-            item.hrs ?? 0
+        <div style="text-align:center">
+          <label class="factor text-xs">g/porción</label><br>
+          <input class="input grams w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring focus:ring-emerald-500/30" type="number" inputmode="decimal" min="0" step="5" value="${
+            item.portion_g
           }">
         </div>
       </div>
     </div>
-    <div class="right">
-      <button class="btn icon del inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-zinc-700 w-8 h-8 text-[15px] hover:bg-gray-100 dark:hover:bg-zinc-800 transition" title="Eliminar">✕</button>
-    </div>
     <div class="emi">0</div>
   `;
-  const tipoSel = row.querySelector(".tipo");
-  const potenciaSel = row.querySelector(".potencia");
-  const qtyInp = row.querySelector(".qty");
-  const hrsInp = row.querySelector(".hrs");
-
-  // Actualiza las potencias disponibles al cambiar el tipo de lámpara
-  function refreshPotencias() {
-    const t = tipoSel.value;
-    const pots = (state.cats.iluminacion?.potencias || {})[t] || [];
-    potenciaSel.innerHTML = optionsHTML(
-      pots,
-      pots.includes(item.potencia) ? item.potencia : pots[0] || ""
-    );
-    compute();
-  }
-
-    // Calcula las emisiones de cada lámpara y actualiza la fila y el estado
+  const pors = row.querySelector(".pors");
+  const grams = row.querySelector(".grams");
   function compute() {
-    const t = tipoSel.value;
-    const p = potenciaSel.value;
-    const f = factorForLamp(t, p);
-    const emi =
-      f *
-      parseFloat(qtyInp.value || "0") *
-      parseFloat(hrsInp.value || "0") *
-      number($("#diasIluminacion")?.value ?? state.defaults.diasIluminacion, 0);
-    row.querySelector(".emi").textContent = fmt(emi);
-    state.ilum[idx] = {
-      tipo: t,
-      potencia: p,
-      qty: parseFloat(qtyInp.value || "0"),
-      hrs: parseFloat(hrsInp.value || "0"),
-    };
+    const p = parseFloat(pors.value || "0");
+    const g = parseFloat(grams.value || "0");
+    const kg_year = (p * g * 52) / 1000;
+    const e = kg_year * item.kgco2e_per_kg;
+    row.querySelector(".emi").textContent = fmt(e);
+    row.dataset.emi = e;
     updateSubtotals();
-    persist();
+    saveFoodPrefsDebounced();
   }
-// Eventos para refrescar o calcular según cambios del usuario
-  tipoSel.addEventListener("change", refreshPotencias);
-  potenciaSel.addEventListener("change", compute);
-  qtyInp.addEventListener("input", compute);
-  hrsInp.addEventListener("input", compute);
-
-  // Botón para eliminar la fila de lámpara
-  row.querySelector(".del").addEventListener("click", () => {
-    state.ilum.splice(idx, 1);
-    renderIluminacion();
-    updateSubtotals();
-    persist();
-  });
-
-  refreshPotencias();
+  pors.addEventListener("input", compute);
+  grams.addEventListener("input", compute);
+  compute();
   return row;
 }
-
-// Renderiza toda la lista de lámparas
-function renderIluminacion() {
-  const cont = document.getElementById("list-ilum");
+function renderAlimentos() {
+  const cont = document.getElementById("list-foods");
+  if (!cont) return;
   cont.innerHTML = "";
-  if (!Array.isArray(state.ilum) || state.ilum.length === 0) {
-    const t0 = (state.cats.iluminacion?.tipos || [])[0] || "";
-    const p0 = ((state.cats.iluminacion?.potencias || {})[t0] || [])[0] || "";
-    state.ilum = [
-      { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
-      { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
-      { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
-    ];
-  }
-  state.ilum.forEach((it, i) => cont.appendChild(lampRow(it, i)));
-
-    // Botón para agregar una nueva lámpara
-  const btnAdd = document.getElementById("btnAddLamp");
-  btnAdd.onclick = () => {
-    const t0 = (state.cats.iluminacion?.tipos || [])[0] || "";
-    const p0 = ((state.cats.iluminacion?.potencias || {})[t0] || [])[0] || "";
-    state.ilum.push({ tipo: t0, potencia: p0, qty: 0, hrs: 0 });
-    renderIluminacion();
-    updateSubtotals();
-    persist();
-  };
-
-  // Botón para reiniciar las lámparas cargadas
-  const btnClear = document.getElementById("btnClearLamp");
-  if (btnClear) {
-    btnClear.onclick = () => {
-      if (!Array.isArray(state.ilum) || state.ilum.length === 0) {
-        const t0 = (state.cats.iluminacion?.tipos || [])[0] || "";
-        const p0 =
-          ((state.cats.iluminacion?.potencias || {})[t0] || [])[0] || "";
-        state.ilum = [
-          { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
-          { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
-          { tipo: t0, potencia: p0, qty: 0, hrs: 0 },
-        ];
-      } else {
-        state.ilum = state.ilum.map((it) => ({ ...it, qty: 0, hrs: 0 }));
-      }
-      renderIluminacion();
-      updateSubtotals();
-      persist();
-    };
-  }
-  
-// Recalcula todas las emisiones si cambian los días de uso
-  const dIlu = document.getElementById("diasIluminacion");
-  if (dIlu) {
-    if (!dIlu.value) dIlu.value = state.defaults.diasIluminacion;
-    dIlu.oninput = () => {
-      document.querySelectorAll("#list-ilum .card.item").forEach((row) => {
-        const tipoSel = row.querySelector(".tipo");
-        const potenciaSel = row.querySelector(".potencia");
-        const qty = parseFloat(row.querySelector(".qty").value || "0");
-        const hrs = parseFloat(row.querySelector(".hrs").value || "0");
-        const f = factorFor(`${tipoSel.value} ${potenciaSel.value}`);
-        row.querySelector(".emi").textContent = fmt(
-          f * qty * hrs * number(dIlu.value, 0)
-        );
-      });
-      updateSubtotals();
-      persist();
-    };
-  }
+  (state.foods || []).forEach((it) => cont.appendChild(foodRow(it)));
+  loadFoodPrefs(); // rehidrata preferencias guardadas
 }
 
+let __foodSaveTimer;
+function saveFoodPrefsDebounced() {
+  clearTimeout(__foodSaveTimer);
+  __foodSaveTimer = setTimeout(saveFoodPrefs, 200);
+}
+function saveFoodPrefs() {
+  const prefs = {};
+  const rows = Array.from(document.querySelectorAll("#list-foods .card.item"));
+  rows.forEach((row, idx) => {
+    const it = state.foods[idx];
+    if (!it) return;
+    const pors = parseFloat(row.querySelector(".pors").value || "0");
+    const grams = parseFloat(
+      row.querySelector(".grams").value || String(it.portion_g)
+    );
+    prefs[it.id] = { pors, grams };
+  });
+  const raw = localStorage.getItem("hc.mobile.full");
+  let data = {};
+  try {
+    data = JSON.parse(raw) || {};
+  } catch (e) {}
+  data.foodPrefs = prefs;
+  localStorage.setItem("hc.mobile.full", JSON.stringify(data));
+}
+
+function loadFoodPrefs() {
+  let prefs = {};
+  try {
+    prefs =
+      JSON.parse(localStorage.getItem("hc.mobile.full") || "{}").foodPrefs ||
+      {};
+  } catch (e) {}
+  const rows = Array.from(document.querySelectorAll("#list-foods .card.item"));
+  rows.forEach((row, idx) => {
+    const it = state.foods[idx];
+    if (!it) return;
+    const pref = prefs[it.id];
+    if (pref) {
+      row.querySelector(".pors").value = pref.pors ?? 0;
+      row.querySelector(".grams").value = pref.grams ?? it.portion_g;
+      const p = parseFloat(row.querySelector(".pors").value || "0");
+      const g = parseFloat(row.querySelector(".grams").value || "0");
+      const kg_year = (p * g * 52) / 1000;
+      const e = kg_year * it.kgco2e_per_kg;
+      row.querySelector(".emi").textContent = fmt(e);
+      row.dataset.emi = e;
+    }
+  });
+  updateSubtotals();
+}
 
 /*********************************************************************************************************
  *
@@ -612,26 +716,26 @@ function updateSubtotals() {
   );
   state.subtotals.clima = subInv + subVer;
   
-    // Transporte
-  const dLT = number(
-    $("#diasLaboralesT")?.value ?? state.defaults.laborales,
-    0
-  );
-  const subComm = (state.cats.commute || []).reduce(
-    (sum, mode) =>
-      sum +
-      factorFor(mode) *
-        ((state.km.commute.ida[mode] ?? 0) +
-          (state.km.commute.vuelta[mode] ?? 0)) *
-        dLT,
-    0
-  );
-  const subBiz = (state.cats.business || []).reduce(
-    (sum, mode) => sum + factorFor(mode) * (state.km.business[mode] ?? 0),
-    0
-  );
-  state.subtotals.transporte = subComm + subBiz;
-  
+// Transporte
+const dLT = number(
+  $("#diasLaboralesT")?.value ?? state.defaults.laborales,
+  0
+);
+const subComm = (state.cats.commute || []).reduce(
+  (sum, mode) =>
+    sum +
+    factorFor(mode) *
+      ((state.km.commute.ida[mode] ?? 0) +
+        (state.km.commute.vuelta[mode] ?? 0)) *
+      dLT,
+  0
+);
+const subBiz = (state.cats.business || []).reduce(
+  (sum, mode) => sum + factorFor(mode) * (state.km.business[mode] ?? 0),
+  0
+);
+state.subtotals.transporte = subComm + subBiz;
+
   // iluminacion
     const dIlu = number(
     $("#diasIluminacion")?.value ?? state.defaults.diasIluminacion,
@@ -651,7 +755,66 @@ function updateSubtotals() {
   if (subIlumEl) subIlumEl.textContent = fmt(subIlum);
 
   updateFooter();
+
+// Alimentos 
+
+//Calcula el subtotal de emisiones CO2 para alimentos
+const subFood = Array.from(
+  document.querySelectorAll("#list-foods .card.item")
+).reduce((sum, row) => {
+  const emi = parseFloat(row.dataset.emi) || 0;
+  return sum + emi;
+}, 0);
+state.subtotals.alimentos = subFood;
+const subFoodEl = document.getElementById("subFood");
+if (subFoodEl) subFoodEl.textContent = fmt(subFood);
+
+updateFooter();
 }
+
+
+//Actualiza el HTML con el total de CO2 por categoria
+function updateResumen() {
+  //Usa los ID de cada uno
+  $("#totArtefactos").textContent = fmt(state.subtotals.artefactos);
+  $("#totClima").textContent = fmt(state.subtotals.clima);
+  $("#totTransporte").textContent = fmt(state.subtotals.transporte);
+  $("#totIluminacion").textContent = fmt(state.subtotals.iluminacion);
+  $("#totAlimentos").textContent = fmt(state.subtotals.alimentos || 0);
+  //Calcula el total sumando las categorias
+  const total =
+    state.subtotals.artefactos +
+    state.subtotals.clima +
+    state.subtotals.transporte +
+    state.subtotals.iluminacion +
+    (state.subtotals.alimentos || 0);
+  $("#totGeneral").textContent = fmt(total);
+
+  // Crea un Select que permite al usuario ver la equivalencia en arboles, de su huella de carbono
+  const sel = $("#equivSelect");
+  if (!sel.dataset.built) {
+  //Opciones del select
+    Object.keys(state.equivalences).forEach((k) => {
+      const opt = document.createElement("option");
+      opt.value = k;
+      opt.textContent = k;
+      sel.appendChild(opt);
+    });
+    //Selecciona por defecto "Arboles"
+    const treesKey = Object.keys(state.equivalences).find((k) =>
+      k.trim().toLowerCase().startsWith("árboles")
+    );
+    if (treesKey) sel.value = treesKey;
+    sel.dataset.built = "1";
+    //Se actualiza el resumen cuando el usuario cambia de sección
+    sel.addEventListener("change", () => updateResumen());
+  }
+
+  //Se obtiene el valor total y se calcula la equivalencia
+  const key = sel.value;
+  const div = state.equivalences[key] ?? 1;
+  $("#equivOut").textContent = div ? fmt(total / div) : "0";
+} 
 
 function updateFooter() {
   const total =
@@ -746,10 +909,13 @@ function resetAll() {
 function renderAll() {
   renderArtefactos();
   renderClima();
-  updateSubtotals();
+  renderAlimentos();
   renderIluminacion();
-  renderTransporte();
-  // updateResumen();
+  renderTransporte()
+  updateSubtotals();
+  updateResumen();
+  updateFooter()
+
 }
 
 // --- Wizard (paso a paso) ---
@@ -821,7 +987,7 @@ function goToStep(idx) {
   if (prev) prev.disabled = currentStep === 0;
   if (next)
     next.textContent =
-      currentStep === WIZARD_STEPS.length - 1 ? "Finalizar" : "Siguiente →";
+      currentStep === WIZARD_STEPS.length - 1 ? "Finalizar" : "Siguiente";
   if (activeKey === "resumen") updateResumen();
   updateFooter();
 }
