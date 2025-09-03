@@ -44,7 +44,7 @@ El proyecto fue desarrollado para aplicar y reforzar conceptos del desarrollo fr
     * Archivos JSON: Se utilizan para almacenar datos como factores de emisión, categorías de consumo y equivalencias.
 
 ## Cómo Empezar
-Para ejecutar este proyecto, solo necesitas un navegador web. No se requiere un servidor local.
+Para ejecutar este proyecto, simplemente abre el archivo index.html en tu navegador web (se recomienda usar la extensión llamada Live Server).
 
 1.  **Clona el repositorio:**
     ```bash git clone https://github.com/OpazoTD/Tp-Integrador-Front-End.git```
