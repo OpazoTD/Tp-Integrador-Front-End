@@ -1,0 +1,208 @@
+/* Estilo para evitar que los paddings sumen ancho extra*/
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Obligamos a llenar la pantalla y evitamos scroll horizontal por desbordes */
+html,
+body {
+  height: 100%;
+}
+
+/* Fuente y margen base para la aplicación */
+body {
+  margin: 0;
+  font-family: "Rubik", system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu,
+    "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Estructura vertical a pantalla completa */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* Por defecto, oculta toda las páginas*/
+.page {
+  display: none;
+  padding: 12px 12px 100px;
+  max-width: 100%;
+  overflow: hidden;
+}
+/* Muestra el wizard */
+.page.active {
+  display: block;
+}
+
+/* Padding y márgenes para las cards - evita overflows */
+.card {
+  padding: 12px;
+  margin-bottom: 12px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+/* Alto mínimo de los inputs */
+.input {
+  /* border-radius: 10px;
+  padding: 10px 12px; */
+  min-height: 44px;
+}
+
+/* Estilo general para los inputs numéricos*/
+.input[type="number"] {
+  width: 80px;
+  font-size: 18px;
+}
+
+select.input {
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-height: 44px;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.item .right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Estilo para columna de emisiones: ancho estable*/
+.emi {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 80px;
+  text-align: right;
+}
+
+/* Estilo para el footer */
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: saturate(1.2) blur(8px);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 30;
+}
+
+/* Estilo para permitir que la primera columna (labels) se pueda encoger en flex.
+  (evita scroll lateral) */
+.item > div:first-child {
+  min-width: 0;
+}
+/* Truncado de líneas con elipsis*/
+.item .name,
+.item .meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Para achicar los inputs numéricos en "Artefactos eléctricos", para 2-3 dígitos */
+#page-artefactos .input.val {
+  width: 6ch;
+  max-width: 80px;
+}
+/*********************************************************************************************/
+/* Estilo global para permitir que los labels envuelvan en todas las secciones, sin overflow */
+/*********************************************************************************************/
+#page-artefactos .item > div:first-child,
+#page-clima .item > div:first-child,
+#page-iluminacion .item > div:first-child,
+#page-transporte .item > div:first-child,
+#page-alimentos .item > div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+#page-artefactos .item .name,
+#page-artefactos .item .meta,
+#page-clima .item .name,
+#page-clima .item .meta,
+#page-iluminacion .item .name,
+#page-iluminacion .item .meta,
+#page-transporte .item .name,
+#page-transporte .item .meta,
+#page-alimentos .item .name,
+#page-alimentos .item .meta {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.25;
+}
+#page-artefactos .item .right,
+#page-clima .item .right,
+#page-iluminacion .item .right,
+#page-transporte .item .right,
+#page-alimentos .item .right {
+  flex: 0 0 auto;
+}
+
+/*********************************************************************************************/
+/* Estilos para controlar el ancho de los inputs, por sección                                */
+/*********************************************************************************************/
+
+/* Artefactos: horas */
+#page-artefactos .input.val {
+  width: 5ch;
+  max-width: 80px;
+}
+/* Clima: horas */
+#page-clima .input.val {
+  width: 5ch;
+  max-width: 80px;
+}
+/* Iluminación: cantidad y horas */
+#page-iluminacion .input.qty,
+#page-iluminacion .input.hrs {
+  width: 5ch;
+  max-width: 80px;
+}
+/* Iluminación: selects que no rompan layout */
+#page-iluminacion .input.tipo,
+#page-iluminacion .input.potencia {
+  max-width: 100%;
+}
+
+/* Transporte: ida/vuelta y km totales */
+#page-transporte .input.ida,
+#page-transporte .input.vuelta {
+  width: 6ch;
+  max-width: 96px;
+}
+#page-transporte .input.kms {
+  width: 10ch;
+  max-width: 120px;
+}
+
+/* Mantener filas flex-wrapping por seguridad */
+.item .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}

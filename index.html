@@ -1,39 +1,128 @@
+
+
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grupo 7 - Calculadora de huella de carbono</title>
-
-    <!-- Fuente del proyecto -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap"
       rel="stylesheet"
     />
-
-    <!-- Tailwind -->
+    <title>Grupo 7 - Calculadora de huella de carbono</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="/css/style.css" />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              rubik: ["Rubik", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
   </head>
-  <body>
-    <main class="w-full max-w-md text-center">
-      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
-        Calculadora de huella de carbono
-      </h1>
-      <p class="mt-3 text-gray-700">
-        Ingresando unos pocos datos de tu vida diaria, podés conocer tu huella de carbono.
-      </p>
 
-      <a
-        href="/views/calculadora.html"
-        class="mt-8 inline-flex items-center justify-center rounded-2xl px-6 py-3 text-base font-medium bg-emerald-500 hover:bg-emerald-600 focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-400 transition"
+  <body
+    class="min-h-screen font-rubik bg-emerald-500 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300"
+  >
+    <!-- Toggle -->
+    <label
+      class="fixed top-4 right-4 z-50 flex items-center cursor-pointer select-none gap-2"
+      title="Cambiar modo"
+    >
+      <span
+        id="mode_text"
+        class="text-sm text-gray-800 dark:text-gray-200"
       >
-        Calcular huella
-      </a>
+        Modo Oscuro
+      </span>
+      <input id="darkToggle" type="checkbox" class="hidden" />
+      <div
+        class="w-10 h-5 bg-gray-300 dark:bg-gray-700 rounded-full p-1 flex items-center transition"
+      >
+        <div
+          id="switchDot"
+          class="w-4 h-4 bg-white rounded-full shadow transform transition"
+        ></div>
+      </div>
+    </label>
+
+    <main class="min-h-screen flex items-center justify-center p-4">
+      <!-- Tarjeta principal -->
+      <article
+        class="w-full max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden transition-colors duration-300"
+      >
+        <div class="flex flex-col lg:flex-row min-h-[450px]">
+          <!-- Sección izquierda: texto -->
+          <section class="flex-1 p-6 lg:p-12 flex flex-col justify-center">
+            <div class="max-w-md mx-auto lg:mx-0 text-center lg:text-left">
+              <h1
+                class="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4"
+              >
+                Calculadora de huella de carbono
+              </h1>
+              <p class="text-base text-gray-700 dark:text-gray-300 mb-8 leading-relaxed">
+                Ingresando unos pocos datos de tu vida diaria, podés conocer tu
+                huella de carbono y contribuir al cuidado del medio ambiente.
+              </p>
+              <a
+                href="calculadora.html"
+                class="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-zinc-900 lg:px-8 lg:py-4 lg:text-lg font-medium text-white
+                 bg-emerald-500 hover:bg-emerald-600 focus-visible:outline-dashed focus-visible:outline-2 transition"
+              >
+                Calcular huella
+              </a>
+            </div>
+          </section>
+
+          <!-- Sección derecha: imagen -->
+          <aside class="flex-1 hidden lg:flex">
+            <img
+              src="./img/huella-de-carbono.jpg"
+              alt="Ilustración sobre huella de carbono"
+              class="w-full h-full object-cover"
+            />
+          </aside>
+        </div>
+      </article>
     </main>
+
+    <script>
+      const html = document.documentElement;
+      const toggle = document.getElementById("darkToggle");
+      const switchDot = document.getElementById("switchDot");
+      const modeText = document.getElementById("mode_text");
+
+      // Carga preferencia previa
+      if (localStorage.getItem("theme") === "dark") {
+        html.classList.add("dark");
+        toggle.checked = true;
+        switchDot.classList.add("translate-x-5");
+        modeText.textContent = "Modo Oscuro";
+      } else {
+        html.classList.remove("dark");
+        toggle.checked = false;
+        switchDot.classList.remove("translate-x-5");
+        modeText.textContent = "Modo Claro";
+      }
+
+      toggle.addEventListener("change", () => {
+        html.classList.toggle("dark");
+        if (html.classList.contains("dark")) {
+          localStorage.setItem("theme", "dark");
+          switchDot.classList.add("translate-x-5");
+          modeText.textContent = "Modo Oscuro";
+        } else {
+          localStorage.setItem("theme", "light");
+          switchDot.classList.remove("translate-x-5");
+          modeText.textContent = "Modo Claro";
+        }
+      });
+    </script>
   </body>
 </html>
